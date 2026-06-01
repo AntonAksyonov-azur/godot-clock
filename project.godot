@@ -26,3 +26,4 @@ project/assembly_name="Clock"
 [rendering]
 
 rendering_device/driver.windows="d3d12"
+environment/defaults/default_clear_color=Color(0.28235295, 0.28627452, 0.4117647, 1)
