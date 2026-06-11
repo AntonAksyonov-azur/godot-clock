@@ -1,0 +1,37 @@
+[gd_scene format=3 uid="uid://brdmoq4rq6jo0"]
+
+[ext_resource type="Script" uid="uid://eou68pin0u5x" path="res://Scripts/Main.gd" id="1_idj7w"]
+[ext_resource type="PackedScene" uid="uid://co16wvmrdnt6p" path="res://Scenes/Clock.tscn" id="1_r150o"]
+
+[sub_resource type="WorldBoundaryShape2D" id="WorldBoundaryShape2D_idj7w"]
+
+[sub_resource type="PhysicsMaterial" id="PhysicsMaterial_idj7w"]
+bounce = 0.25
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_idj7w"]
+size = Vector2(1, 1)
+
+[node name="Root" type="Node2D" unique_id=391446286]
+script = ExtResource("1_idj7w")
+clock_scene = ExtResource("1_r150o")
+
+[node name="Bottom" type="Area2D" parent="." unique_id=1619251714]
+position = Vector2(576, 648)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Bottom" unique_id=41578735]
+shape = SubResource("WorldBoundaryShape2D_idj7w")
+
+[node name="Ground" type="StaticBody2D" parent="." unique_id=441136639]
+position = Vector2(576, 712)
+scale = Vector2(1152, 128)
+physics_material_override = SubResource("PhysicsMaterial_idj7w")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Ground" unique_id=740277309]
+shape = SubResource("RectangleShape2D_idj7w")
+
+[node name="Timer" type="Timer" parent="." unique_id=832581335]
+wait_time = 0.2
+autostart = true
+
+[connection signal="body_entered" from="Bottom" to="." method="_on_bottom_body_entered"]
+[connection signal="timeout" from="Timer" to="." method="_on_timer_timeout"]

@@ -1,4 +1,5 @@
-extends Node2D
+class_name Clock
+extends RigidBody2D
 
 enum StartTimeMode { 
 	SYSTEM_TIME, 
@@ -7,8 +8,19 @@ enum StartTimeMode {
 	OFFSET_TIME
 }
 
+@export_group("Clock Parts")
+@export var _collision_shape := CollisionShape2D
+@export var _visualization := Node2D;
+@export var _arm_hour := Node2D;
+@export var _arm_minute := Node2D;
+@export var _arm_second := Node2D;
+
 @export_group("Clock Mode")
 @export var _startTime := StartTimeMode.SYSTEM_TIME
+
+@export_group("Clock Instances")
+@export var time_scale_min := -10.0
+@export var time_scale_max := 10.0
 @export var _timeScale := 1.0
 
 @export_group("Fixed or Offset Start Time. Doesnt apply for SYSTEM_TIME, RANDOM_TIME")
@@ -24,7 +36,9 @@ var _currentSeconds := 0.0
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
-	_currentSeconds = getInitialTime()
+	initializeByMode()
+	_currentSeconds = getInitialTimeByMode()
+	
 	updateCurrentTime(0.0)
 	pass
 
@@ -34,7 +48,7 @@ func _process(delta: float) -> void:
 	pass
 
 #
-func getInitialTime() -> float:
+func getInitialTimeByMode() -> float:
 	if _startTime == StartTimeMode.SYSTEM_TIME:
 		var currentTime: Dictionary = Time.get_time_dict_from_system()
 		var currentSeconds = currentTime["second"] + currentTime["minute"] * 60 + currentTime["hour"] * 3600
@@ -57,9 +71,18 @@ func getInitialTime() -> float:
 	else:
 		return 0
 
+func initializeByMode() -> void:
+	if _startTime == StartTimeMode.RANDOM_TIME:
+		_timeScale = randf_range(time_scale_min, time_scale_max)
+	pass
+
 func updateCurrentTime(delta: float) -> void:
 	_currentSeconds += delta * _timeScale
 	_armSeconds.rotation = fmod(_currentSeconds, 60) * TAU / 60.0 
 	_armMinute.rotation = fmod(_currentSeconds / 60, 60) * TAU / 60.0 
 	_armHour.rotation = fmod(_currentSeconds / 3600, 12) * TAU / 12.0
 	pass
+	
+func setUniformScale(scale_factor: float) -> void:
+	_visualization.scale = Vector2(scale_factor, scale_factor)
+	_collision_shape.scale = Vector2(scale_factor, scale_factor)
